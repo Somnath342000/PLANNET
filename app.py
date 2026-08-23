@@ -11,20 +11,22 @@ st.set_page_config(
     layout="wide"
 )
 
+# =====================================================
+# TITLE
+# =====================================================
+
 st.title("🪐 PLANET WAR")
-st.write("Planet Database Search")
+st.caption("Planet Database Search")
 
 
 # =====================================================
-# LOAD EXCEL
+# LOAD EXCEL DATABASE
 # =====================================================
 
 @st.cache_data
 def load_database():
 
-    df = pd.read_excel(
-        "MASTAR PLANNET.xlsx"
-    )
+    df = pd.read_excel("MASTAR PLANNET.xlsx")
 
     # Clean column names
     df.columns = (
@@ -36,6 +38,11 @@ def load_database():
         .str.strip()
     )
 
+    # Clean values
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col] = df[col].astype(str).str.strip()
+
     return df
 
 
@@ -43,40 +50,17 @@ df = load_database()
 
 
 # =====================================================
-# COLUMN CLEANING
-# =====================================================
-
-# Remove accidental spaces around values
-for col in df.columns:
-    if df[col].dtype == "object":
-        df[col] = df[col].astype(str).str.strip()
-
-
-# =====================================================
-# SHOW DATABASE COLUMNS
-# =====================================================
-
-with st.expander("🔧 Database Columns"):
-    st.write(list(df.columns))
-
-
-# =====================================================
-# FIND COLUMN FUNCTION
+# FIND COLUMN
 # =====================================================
 
 def find_column(possible_names):
 
     for name in possible_names:
-
         if name in df.columns:
             return name
 
     return None
 
-
-# =====================================================
-# DETECT REQUIRED COLUMNS
-# =====================================================
 
 planet_col = find_column([
     "PLANNET",
@@ -104,8 +88,7 @@ state_col = find_column([
 
 state_point_col = find_column([
     "STATE POINTS",
-    "STATE POINT",
-    "STATE POINTS "
+    "STATE POINT"
 ])
 
 house_point_col = find_column([
@@ -135,104 +118,99 @@ won_col = find_column([
 
 
 # =====================================================
-# CHECK DATABASE
+# CHECK REQUIRED COLUMNS
 # =====================================================
 
-required_columns = {
-    "PLANNET": planet_col,
-    "ZODAIC SIGN": sign_col,
-    "HOUSE": house_col,
-    "STATE": state_col,
-    "STATE POINT": state_point_col,
-    "HOUSE POINT": house_point_col,
-    "TOTAL BONUS POINT": tbp_col,
-    "DRAW": draw_col,
-    "WON": won_col
-}
-
-missing = [
-    name
-    for name, column in required_columns.items()
-    if column is None
+required = [
+    planet_col,
+    sign_col,
+    house_col,
+    state_col,
+    state_point_col,
+    house_point_col,
+    tbp_col,
+    draw_col,
+    won_col
 ]
 
-
-if missing:
+if any(x is None for x in required):
 
     st.error(
-        "❌ Database-এর নিচের column পাওয়া যাচ্ছে না:"
-    )
-
-    for item in missing:
-        st.write("•", item)
-
-    st.info(
-        "উপরের 'Database Columns' খুলে আপনার Excel-এর actual column names দেখুন।"
+        "Database column configuration problem."
     )
 
     st.stop()
 
 
 # =====================================================
-# SIDEBAR FILTER
+# FILTER SECTION
 # =====================================================
 
-st.header("🔎 SEARCH FILTER")
+st.subheader("🔎 SEARCH PLANET")
 
 
-# -----------------------------
-# ZODAIC SIGN
-# -----------------------------
-
-sign_list = sorted(
-    df[sign_col]
-    .dropna()
-    .unique()
-    .tolist()
-)
-
-selected_sign = st.sidebar.selectbox(
-    "♈ ZODAIC SIGN",
-    ["ALL"] + sign_list
-)
-
-
-# -----------------------------
-# PLANNET
-# -----------------------------
-
-planet_list = sorted(
-    df[planet_col]
-    .dropna()
-    .unique()
-    .tolist()
-)
-
-selected_planet = st.sidebar.selectbox(
-    "🪐 PLANNET",
-    ["ALL"] + planet_list
-)
-
-
-# -----------------------------
-# HOUSE
-# -----------------------------
-
-house_list = sorted(
-    df[house_col]
-    .dropna()
-    .unique()
-    .tolist()
-)
-
-selected_house = st.sidebar.selectbox(
-    "🏠 HOUSE",
-    ["ALL"] + house_list
-)
+col1, col2, col3 = st.columns(3)
 
 
 # =====================================================
-# APPLY FILTER
+# SIGN FILTER
+# =====================================================
+
+with col1:
+
+    sign_list = sorted(
+        df[sign_col]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    selected_sign = st.selectbox(
+        "♈ ZODAIC SIGN",
+        ["ALL"] + sign_list
+    )
+
+
+# =====================================================
+# PLANET FILTER
+# =====================================================
+
+with col2:
+
+    planet_list = sorted(
+        df[planet_col]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    selected_planet = st.selectbox(
+        "🪐 PLANNET",
+        ["ALL"] + planet_list
+    )
+
+
+# =====================================================
+# HOUSE FILTER
+# =====================================================
+
+with col3:
+
+    house_list = sorted(
+        df[house_col]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    selected_house = st.selectbox(
+        "🏠 HOUSE",
+        ["ALL"] + house_list
+    )
+
+
+# =====================================================
+# FILTER DATABASE
 # =====================================================
 
 result = df.copy()
@@ -268,142 +246,114 @@ if selected_house != "ALL":
 
 st.divider()
 
-st.subheader("🎯 RESULT")
-
-
 if result.empty:
 
     st.warning(
-        "❌ এই combination-এর কোনো data পাওয়া যায়নি।"
+        "❌ No matching Planet Card found."
+    )
+
+elif len(result) > 1:
+
+    st.info(
+        f"🔎 {len(result)} matching cards found. "
+        "Please select all three filters."
     )
 
 else:
 
-    # =================================================
-    # OUTPUT TABLE
-    # =================================================
-
-    output = pd.DataFrame({
-
-        "PLANNET":
-            result[planet_col].values,
-
-        "SIGN":
-            result[sign_col].values,
-
-        "STATE":
-            result[state_col].values,
-
-        "STATE POINT":
-            result[state_point_col].values,
-
-        "HOUSE":
-            result[house_col].values,
-
-        "HOUSE POINT":
-            result[house_point_col].values,
-
-        "TOTAL BONUS POINT":
-            result[tbp_col].values,
-
-        "DRAW":
-            result[draw_col].values,
-
-        "WON":
-            result[won_col].values
-    })
-
-
-    st.dataframe(
-        output,
-        use_container_width=True,
-        hide_index=True
-    )
-
-
-# =====================================================
-# SINGLE CARD
-# =====================================================
-
-if len(result) == 1:
-
     row = result.iloc[0]
 
-    st.divider()
+    # =================================================
+    # PLANET CARD
+    # =================================================
 
     st.subheader("🃏 PLANET CARD")
 
-    # -----------------------------
-    # BASIC
-    # -----------------------------
+
+    # -------------------------------------------------
+    # BASIC INFORMATION
+    # -------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         st.metric(
             "🪐 PLANNET",
             str(row[planet_col])
         )
 
     with c2:
+
         st.metric(
             "♈ SIGN",
             str(row[sign_col])
         )
 
     with c3:
+
         st.metric(
             "🏠 HOUSE",
             str(row[house_col])
         )
 
 
-    # -----------------------------
-    # STATE
-    # -----------------------------
+    st.divider()
+
+
+    # -------------------------------------------------
+    # STATE INFORMATION
+    # -------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         st.metric(
             "STATE",
             str(row[state_col])
         )
 
     with c2:
+
         st.metric(
             "STATE POINT",
             row[state_point_col]
         )
 
     with c3:
+
         st.metric(
             "HOUSE POINT",
             row[house_point_col]
         )
 
 
-    # -----------------------------
-    # SCORE
-    # -----------------------------
-
     st.divider()
+
+
+    # -------------------------------------------------
+    # FINAL RESULT
+    # -------------------------------------------------
 
     c1, c2, c3 = st.columns(3)
 
     with c1:
+
         st.metric(
             "⭐ TBP",
             row[tbp_col]
         )
 
     with c2:
+
         st.metric(
             "🤝 DRAW",
             row[draw_col]
         )
 
     with c3:
+
         st.metric(
             "🏆 WON",
             row[won_col]
