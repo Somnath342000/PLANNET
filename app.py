@@ -358,3 +358,179 @@ else:
             "🏆 WON",
             row[won_col]
         )
+#-----শেষ
+
+# =====================================================
+# CARD NUMBER SEARCH
+# =====================================================
+
+st.divider()
+
+st.subheader("🎴 CARD NUMBER SEARCH")
+
+card_number = st.number_input(
+    "Enter Card Number (1 - 108)",
+    min_value=1,
+    max_value=108,
+    value=1,
+    step=1
+)
+
+search_card = st.button(
+    "🔍 SEARCH CARD",
+    use_container_width=True
+)
+
+
+# =====================================================
+# CARD SEARCH RESULT
+# =====================================================
+
+if search_card:
+
+    # ---------------------------------------------
+    # Find Card
+    # ---------------------------------------------
+
+    card_result = df[
+        df["CARD"].astype(str).str.strip()
+        == str(card_number)
+    ].copy()
+
+
+    # ---------------------------------------------
+    # If CARD column is numeric
+    # ---------------------------------------------
+
+    if card_result.empty:
+
+        try:
+
+            card_result = df[
+                pd.to_numeric(
+                    df["CARD"],
+                    errors="coerce"
+                ) == card_number
+            ].copy()
+
+        except:
+            pass
+
+
+    # ---------------------------------------------
+    # CARD NOT FOUND
+    # ---------------------------------------------
+
+    if card_result.empty:
+
+        st.error(
+            f"❌ Card {card_number} not found."
+        )
+
+
+    # ---------------------------------------------
+    # CARD FOUND
+    # ---------------------------------------------
+
+    else:
+
+        st.success(
+            f"🎴 Card {card_number} found"
+        )
+
+
+        # =========================================
+        # CARD INFORMATION
+        # =========================================
+
+        first_row = card_result.iloc[0]
+
+        c1, c2 = st.columns(2)
+
+        with c1:
+
+            st.metric(
+                "🎴 CARD",
+                str(card_number)
+            )
+
+        with c2:
+
+            st.metric(
+                "🪐 PLANNET",
+                str(first_row[planet_col])
+            )
+
+
+        st.divider()
+
+
+        # =========================================
+        # 12 HOUSE DATA
+        # =========================================
+
+        st.subheader(
+            f"🏠 Card {card_number} — 12 Houses"
+        )
+
+
+        # -----------------------------------------
+        # Select required columns
+        # -----------------------------------------
+
+        card_output = pd.DataFrame({
+
+            "HOUSE":
+                card_result[house_col].values,
+
+            "SIGN":
+                card_result[sign_col].values,
+
+            "PLANNET":
+                card_result[planet_col].values,
+
+            "STATE":
+                card_result[state_col].values,
+
+            "STATE POINT":
+                card_result[state_point_col].values,
+
+            "HOUSE POINT":
+                card_result[house_point_col].values,
+
+            "TBP":
+                card_result[tbp_col].values,
+
+            "DRAW":
+                card_result[draw_col].values,
+
+            "WON":
+                card_result[won_col].values
+        })
+
+
+        # -----------------------------------------
+        # Sort House 1 → 12
+        # -----------------------------------------
+
+        card_output["HOUSE_SORT"] = pd.to_numeric(
+            card_output["HOUSE"],
+            errors="coerce"
+        )
+
+        card_output = (
+            card_output
+            .sort_values("HOUSE_SORT")
+            .drop(columns=["HOUSE_SORT"])
+        )
+
+
+        # -----------------------------------------
+        # Show 12 Houses
+        # -----------------------------------------
+
+        st.dataframe(
+            card_output,
+            use_container_width=True,
+            hide_index=True
+        )
