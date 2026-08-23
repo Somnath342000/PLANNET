@@ -482,18 +482,6 @@ if search_card:
             "HOUSE":
                 card_result[house_col].values,
 
-            "SIGN":
-                card_result[sign_col].values,
-
-            "PLANNET":
-                card_result[planet_col].values,
-
-            "STATE":
-                card_result[state_col].values,
-
-            "STATE POINT":
-                card_result[state_point_col].values,
-
             "HOUSE POINT":
                 card_result[house_point_col].values,
 
