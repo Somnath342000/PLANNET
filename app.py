@@ -445,21 +445,41 @@ if search_card:
 
         first_row = card_result.iloc[0]
 
-        c1, c2 = st.columns(2)
+# =====================================================
+# CARD BASIC INFORMATION
+# =====================================================
 
-        with c1:
+c1, c2, c3, c4, c5 = st.columns(5)
 
-            st.metric(
-                "🎴 CARD",
-                str(card_number)
-            )
+with c1:
+    st.metric(
+        "🎴 CARD",
+        str(card_number)
+    )
 
-        with c2:
+with c2:
+    st.metric(
+        "🪐 PLANNET",
+        str(first_row[planet_col])
+    )
 
-            st.metric(
-                "🪐 PLANNET",
-                str(first_row[planet_col])
-            )
+with c3:
+    st.metric(
+        "♈ SIGN",
+        str(first_row[sign_col])
+    )
+
+with c4:
+    st.metric(
+        "⚡ STATE",
+        str(first_row[state_col])
+    )
+
+with c5:
+    st.metric(
+        "⭐ STATE POINT",
+        str(first_row[state_point_col])
+    )
 
 
         st.divider()
@@ -482,18 +502,6 @@ if search_card:
 
             "HOUSE":
                 card_result[house_col].values,
-
-            "SIGN":
-                card_result[sign_col].values,
-
-            "PLANNET":
-                card_result[planet_col].values,
-
-            "STATE":
-                card_result[state_col].values,
-
-            "STATE POINT":
-                card_result[state_point_col].values,
 
             "HOUSE POINT":
                 card_result[house_point_col].values,
