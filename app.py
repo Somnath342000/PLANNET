@@ -383,43 +383,23 @@ search_card = st.button(
 
 
 # =====================================================
-# CARD SEARCH RESULT
+# SEARCH CARD
 # =====================================================
 
 if search_card:
 
-    # ---------------------------------------------
-    # Find Card
-    # ---------------------------------------------
-
+    # Find card number
     card_result = df[
-        df["CARD"].astype(str).str.strip()
-        == str(card_number)
+        pd.to_numeric(
+            df["CARD"],
+            errors="coerce"
+        ) == card_number
     ].copy()
 
 
-    # ---------------------------------------------
-    # If CARD column is numeric
-    # ---------------------------------------------
-
-    if card_result.empty:
-
-        try:
-
-            card_result = df[
-                pd.to_numeric(
-                    df["CARD"],
-                    errors="coerce"
-                ) == card_number
-            ].copy()
-
-        except:
-            pass
-
-
-    # ---------------------------------------------
+    # =================================================
     # CARD NOT FOUND
-    # ---------------------------------------------
+    # =================================================
 
     if card_result.empty:
 
@@ -428,79 +408,91 @@ if search_card:
         )
 
 
-    # ---------------------------------------------
+    # =================================================
     # CARD FOUND
-    # ---------------------------------------------
+    # =================================================
 
     else:
 
+        # First row of this card
+        first_row = card_result.iloc[0]
+
+
         st.success(
-            f"🎴 Card {card_number} found"
+            f"🎴 Card {card_number} Found"
         )
 
 
-        # =========================================
+        # =================================================
         # CARD INFORMATION
-        # =========================================
+        # =================================================
 
-        first_row = card_result.iloc[0]
+        c1, c2, c3 = st.columns(3)
 
-# =====================================================
-# CARD BASIC INFORMATION
-# =====================================================
+        with c1:
+            st.metric(
+                "🎴 CARD",
+                str(card_number)
+            )
 
-c1, c2, c3, c4, c5 = st.columns(5)
+        with c2:
+            st.metric(
+                "🪐 PLANNET",
+                str(first_row[planet_col])
+            )
 
-with c1:
-    st.metric(
-        "🎴 CARD",
-        str(card_number)
-    )
-
-with c2:
-    st.metric(
-        "🪐 PLANNET",
-        str(first_row[planet_col])
-    )
-
-with c3:
-    st.metric(
-        "♈ SIGN",
-        str(first_row[sign_col])
-    )
-
-with c4:
-    st.metric(
-        "⚡ STATE",
-        str(first_row[state_col])
-    )
-
-with c5:
-    st.metric(
-        "⭐ STATE POINT",
-        str(first_row[state_point_col])
-    )
-
-st.divider()
+        with c3:
+            st.metric(
+                "♈ SIGN",
+                str(first_row[sign_col])
+            )
 
 
-        # =========================================
+        c1, c2 = st.columns(2)
+
+        with c1:
+            st.metric(
+                "⚡ STATE",
+                str(first_row[state_col])
+            )
+
+        with c2:
+            st.metric(
+                "⭐ STATE POINT",
+                str(first_row[state_point_col])
+            )
+
+
+        st.divider()
+
+
+        # =================================================
         # 12 HOUSE DATA
-        # =========================================
+        # =================================================
 
         st.subheader(
             f"🏠 Card {card_number} — 12 Houses"
         )
 
 
-        # -----------------------------------------
-        # Select required columns
-        # -----------------------------------------
+        # Create output table
 
         card_output = pd.DataFrame({
 
             "HOUSE":
                 card_result[house_col].values,
+
+            "SIGN":
+                card_result[sign_col].values,
+
+            "PLANNET":
+                card_result[planet_col].values,
+
+            "STATE":
+                card_result[state_col].values,
+
+            "STATE POINT":
+                card_result[state_point_col].values,
 
             "HOUSE POINT":
                 card_result[house_point_col].values,
@@ -516,25 +508,25 @@ st.divider()
         })
 
 
-        # -----------------------------------------
-        # Sort House 1 → 12
-        # -----------------------------------------
+        # =================================================
+        # SORT HOUSE 1 → 12
+        # =================================================
 
-        card_output["HOUSE_SORT"] = pd.to_numeric(
+        card_output["_HOUSE_SORT"] = pd.to_numeric(
             card_output["HOUSE"],
             errors="coerce"
         )
 
         card_output = (
             card_output
-            .sort_values("HOUSE_SORT")
-            .drop(columns=["HOUSE_SORT"])
+            .sort_values("_HOUSE_SORT")
+            .drop(columns="_HOUSE_SORT")
         )
 
 
-        # -----------------------------------------
-        # Show 12 Houses
-        # -----------------------------------------
+        # =================================================
+        # SHOW 12 HOUSE DATA
+        # =================================================
 
         st.dataframe(
             card_output,
