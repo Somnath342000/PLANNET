@@ -177,7 +177,7 @@ if missing:
 # SIDEBAR FILTER
 # =====================================================
 
-st.sidebar.header("🔎 SEARCH FILTER")
+st.header("🔎 SEARCH FILTER")
 
 
 # -----------------------------
