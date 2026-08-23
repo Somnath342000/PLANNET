@@ -481,8 +481,7 @@ with c5:
         str(first_row[state_point_col])
     )
 
-
-        st.divider()
+st.divider()
 
 
         # =========================================
