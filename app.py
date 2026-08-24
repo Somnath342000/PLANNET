@@ -246,6 +246,62 @@ if search_card:
                 "⭐ STATE POINT",
                 str(first_row[state_point_col])
             )
+            # =================================================
+        # 12 HOUSE DATA
+        # =================================================
+
+        st.subheader(
+            f"🏠 Card {card_number} — 12 Houses"
+        )
+
+
+        # Create output table
+
+        card_output = pd.DataFrame({
+
+            "HOUSE":
+                card_result[house_col].values,
+
+            "HOUSE POINT":
+                card_result[house_point_col].values,
+
+            "TBP":
+                card_result[tbp_col].values,
+
+            "DRAW":
+                card_result[draw_col].values,
+
+            "WON":
+                card_result[won_col].values
+        })
+
+
+        # =================================================
+        # SORT HOUSE 1 → 12
+        # =================================================
+
+        card_output["_HOUSE_SORT"] = pd.to_numeric(
+            card_output["HOUSE"],
+            errors="coerce"
+        )
+
+        card_output = (
+            card_output
+            .sort_values("_HOUSE_SORT")
+            .drop(columns="_HOUSE_SORT")
+        )
+        st.divider()
+
+
+        # =================================================
+        # SHOW 12 HOUSE DATA
+        # =================================================
+
+        st.dataframe(
+            card_output,
+            use_container_width=True,
+            hide_index=True
+        )
 
 
         st.divider()
@@ -429,63 +485,7 @@ else:
         )
 
 
-        # =================================================
-        # 12 HOUSE DATA
-        # =================================================
-
-        st.subheader(
-            f"🏠 Card {card_number} — 12 Houses"
-        )
-
-
-        # Create output table
-
-        card_output = pd.DataFrame({
-
-            "HOUSE":
-                card_result[house_col].values,
-
-            "HOUSE POINT":
-                card_result[house_point_col].values,
-
-            "TBP":
-                card_result[tbp_col].values,
-
-            "DRAW":
-                card_result[draw_col].values,
-
-            "WON":
-                card_result[won_col].values
-        })
-
-
-        # =================================================
-        # SORT HOUSE 1 → 12
-        # =================================================
-
-        card_output["_HOUSE_SORT"] = pd.to_numeric(
-            card_output["HOUSE"],
-            errors="coerce"
-        )
-
-        card_output = (
-            card_output
-            .sort_values("_HOUSE_SORT")
-            .drop(columns="_HOUSE_SORT")
-        )
-        st.divider()
-
-
-        # =================================================
-        # SHOW 12 HOUSE DATA
-        # =================================================
-
-        st.dataframe(
-            card_output,
-            use_container_width=True,
-            hide_index=True
-        )
-
+        
 
     with c3:
 
