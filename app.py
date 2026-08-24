@@ -369,31 +369,96 @@ if search_card:
             return f"{n}{suffix}"
 
 
-        # =============================================
-        # TBP RANKING SUMMARY
-        # =============================================
+# =====================================================
+# TBP HOUSE RANKING DISPLAY
+# =====================================================
 
-        st.divider()
+st.divider()
 
-        st.subheader(
-            "🏆 TBP HOUSE RANKING"
+st.subheader("🏆 TBP HOUSE RANKING")
+
+st.caption(
+    "Higher TBP = Better Rank • "
+    "Same TBP = Earlier House gets priority"
+)
+
+
+# =====================================================
+# RANKING HEADER
+# =====================================================
+
+col1, col2, col3 = st.columns([2, 2, 2])
+
+with col1:
+    st.markdown("**🏠 HOUSE**")
+
+with col2:
+    st.markdown("**⭐ TBP**")
+
+with col3:
+    st.markdown("**🏆 RANK**")
+
+
+st.divider()
+
+
+# =====================================================
+# HOUSE RANK ROWS
+# =====================================================
+
+for _, rank_row in card_result.iterrows():
+
+    house = int(rank_row[house_col])
+
+    tbp = rank_row[tbp_col]
+
+    rank = house_rank[str(house)]
+
+
+    # ---------------------------------------------
+    # MEDAL
+    # ---------------------------------------------
+
+    if rank == 1:
+        rank_display = "🥇 1st"
+
+    elif rank == 2:
+        rank_display = "🥈 2nd"
+
+    elif rank == 3:
+        rank_display = "🥉 3rd"
+
+    else:
+        rank_display = ordinal(rank)
+
+
+    # ---------------------------------------------
+    # HOUSE NAME
+    # ---------------------------------------------
+
+    house_display = ordinal(house) + " House"
+
+
+    # ---------------------------------------------
+    # DISPLAY
+    # ---------------------------------------------
+
+    col1, col2, col3 = st.columns([2, 2, 2])
+
+    with col1:
+        st.write(
+            f"**{house_display}**"
         )
 
-        st.caption(
-            "Higher TBP = Higher Rank. "
-            "If TBP is equal, House order gets priority."
+    with col2:
+        st.write(
+            f"**{tbp}**"
         )
 
-
-        # Header
-        h1, h2 = st.columns(2)
-
-        with h1:
-            st.markdown("**HOUSE**")
-
-        with h2:
-            st.markdown("**TBP (RANKING)**")
-
+    with col3:
+        st.write(
+            f"**{rank_display}**"
+        )
 
         # ---------------------------------------------
         # Ranking 1 → 12
