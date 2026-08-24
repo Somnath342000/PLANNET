@@ -275,6 +275,141 @@ if search_card:
             "_HOUSE_SORT"
         )
 
+        # =================================================
+# RANKING BY TBP
+# =================================================
+
+# House এবং TBP আলাদা করে নেওয়া
+ranking_data = card_result[
+    [house_col, tbp_col]
+].copy()
+
+# TBP numeric করা
+ranking_data["_TBP_SORT"] = pd.to_numeric(
+    ranking_data[tbp_col],
+    errors="coerce"
+)
+
+# TBP বেশি থেকে কম
+# একই TBP হলে database-এর original order priority পাবে
+ranking_data = ranking_data.sort_values(
+    by="_TBP_SORT",
+    ascending=False,
+    kind="stable"
+).reset_index(drop=True)
+
+
+# =================================================
+# UNIQUE RANK 1 - 12
+# =================================================
+
+ranking_data["_RANK"] = range(
+    1,
+    len(ranking_data) + 1
+)
+
+
+# =================================================
+# HOUSE → RANK DICTIONARY
+# =================================================
+
+house_rank = {}
+
+for _, r in ranking_data.iterrows():
+
+    house_key = str(r[house_col])
+
+    house_rank[house_key] = int(
+        r["_RANK"]
+    )
+
+
+# =================================================
+# HOUSE DISPLAY ORDER
+# =================================================
+
+card_result["_HOUSE_SORT"] = pd.to_numeric(
+    card_result[house_col],
+    errors="coerce"
+)
+
+card_result = card_result.sort_values(
+    "_HOUSE_SORT"
+)
+
+
+# =================================================
+# ORDINAL FUNCTION
+# =================================================
+
+def ordinal(n):
+
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+
+    else:
+
+        suffix = {
+            1: "st",
+            2: "nd",
+            3: "rd"
+        }.get(n % 10, "th")
+
+    return f"{n}{suffix}"
+
+
+# =================================================
+# RANKING SUMMARY
+# =================================================
+
+st.markdown("### 🏆 TBP HOUSE RANKING")
+
+st.markdown(
+    """
+    **House | TBP (Ranking)**
+    """
+)
+
+
+for _, r in card_result.iterrows():
+
+    house = str(r[house_col])
+
+    tbp = r[tbp_col]
+
+    rank = house_rank[house]
+
+    st.write(
+        f"**{ordinal(int(house))} House : "
+        f"{tbp} ({ordinal(rank)})**"
+    )
+
+
+# =================================================
+# 12 HOUSE EXPANDERS
+# =================================================
+
+st.divider()
+
+st.subheader(
+    f"🏠 Card {card_number} — House Details"
+)
+
+
+for _, house_row in card_result.iterrows():
+
+    house = house_row[house_col]
+
+    house_point = house_row[house_point_col]
+
+    tbp = house_row[tbp_col]
+
+    draw = house_row[draw_col]
+
+    won = house_row[won_col]
+
+    rank = house_rank[str(house)]
+
 
         # =================================================
         # 12 HOUSE EXPANDERS
