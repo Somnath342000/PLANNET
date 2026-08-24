@@ -321,43 +321,6 @@ else:
             row[state_point_col]
         )
 
-    with c3:
-
-        st.metric(
-            "HOUSE POINT",
-            row[house_point_col]
-        )
-
-
-    st.divider()
-
-
-    # -------------------------------------------------
-    # FINAL RESULT
-    # -------------------------------------------------
-
-    c1, c2, c3 = st.columns(3)
-
-    with c1:
-
-        st.metric(
-            "⭐ TBP",
-            row[tbp_col]
-        )
-
-    with c2:
-
-        st.metric(
-            "🤝 DRAW",
-            row[draw_col]
-        )
-
-    with c3:
-
-        st.metric(
-            "🏆 WON",
-            row[won_col]
-        )
 #-----শেষ
 
 # =====================================================
@@ -510,6 +473,7 @@ if search_card:
             .sort_values("_HOUSE_SORT")
             .drop(columns="_HOUSE_SORT")
         )
+        st.divider()
 
 
         # =================================================
@@ -521,3 +485,45 @@ if search_card:
             use_container_width=True,
             hide_index=True
         )
+
+
+    with c3:
+
+        st.metric(
+            "HOUSE POINT",
+            row[house_point_col]
+        )
+
+
+    st.divider()
+
+
+    # -------------------------------------------------
+    # FINAL RESULT
+    # -------------------------------------------------
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+
+        st.metric(
+            "⭐ TBP",
+            row[tbp_col]
+        )
+
+    with c2:
+
+        st.metric(
+            "🤝 DRAW",
+            row[draw_col]
+        )
+
+    with c3:
+
+        st.metric(
+            "🏆 WON",
+            row[won_col]
+        )
+
+
+
