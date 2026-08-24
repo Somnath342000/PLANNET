@@ -199,9 +199,7 @@ if search_card:
 
     else:
 
-        # First row of this card
         first_row = card_result.iloc[0]
-
 
         st.success(
             f"🎴 Card {card_number} Found"
@@ -215,18 +213,21 @@ if search_card:
         c1, c2, c3 = st.columns(3)
 
         with c1:
+
             st.metric(
                 "🎴 CARD",
                 str(card_number)
             )
 
         with c2:
+
             st.metric(
                 "🪐 PLANNET",
                 str(first_row[planet_col])
             )
 
         with c3:
+
             st.metric(
                 "♈ SIGN",
                 str(first_row[sign_col])
@@ -236,72 +237,114 @@ if search_card:
         c1, c2 = st.columns(2)
 
         with c1:
+
             st.metric(
                 "⚡ STATE",
                 str(first_row[state_col])
             )
 
         with c2:
+
             st.metric(
                 "⭐ STATE POINT",
                 str(first_row[state_point_col])
             )
-         # =================================================
-        # 12 HOUSE DATA
+
+
+        # =================================================
+        # HOUSE SECTION
         # =================================================
 
+        st.divider()
+
         st.subheader(
-            f"🏠 Card {card_number} — 12 Houses"
+            f"🏠 Card {card_number} — House Details"
         )
-
-
-        # Create output table
-
-        card_output = pd.DataFrame({
-
-            "HOUSE":
-                card_result[house_col].values,
-
-            "HOUSE POINT":
-                card_result[house_point_col].values,
-
-            "TBP":
-                card_result[tbp_col].values,
-
-            "DRAW":
-                card_result[draw_col].values,
-
-            "WON":
-                card_result[won_col].values
-        })
 
 
         # =================================================
         # SORT HOUSE 1 → 12
         # =================================================
 
-        card_output["_HOUSE_SORT"] = pd.to_numeric(
-            card_output["HOUSE"],
+        card_result["_HOUSE_SORT"] = pd.to_numeric(
+            card_result[house_col],
             errors="coerce"
         )
 
-        card_output = (
-            card_output
-            .sort_values("_HOUSE_SORT")
-            .drop(columns="_HOUSE_SORT")
+        card_result = card_result.sort_values(
+            "_HOUSE_SORT"
         )
-        st.divider()
 
 
         # =================================================
-        # SHOW 12 HOUSE DATA
+        # 12 HOUSE EXPANDERS
         # =================================================
 
-        st.dataframe(
-            card_output,
-            use_container_width=True,
-            hide_index=True
-        )
+        for _, house_row in card_result.iterrows():
 
+            house = house_row[house_col]
+
+            house_point = house_row[house_point_col]
+
+            tbp = house_row[tbp_col]
+
+            draw = house_row[draw_col]
+
+            won = house_row[won_col]
+
+
+            # =============================================
+            # HOUSE EXPANDER
+            # =============================================
+
+            with st.expander(
+                f"🏠 HOUSE {house}",
+                expanded=False
+            ):
+
+                # -----------------------------------------
+                # HOUSE POINT
+                # -----------------------------------------
+
+                st.metric(
+                    "🏠 HOUSE POINT",
+                    str(house_point)
+                )
+
+
+                # -----------------------------------------
+                # SCORE
+                # -----------------------------------------
+
+                c1, c2, c3 = st.columns(3)
+
+
+                with c1:
+
+                    st.metric(
+                        "⭐ TBP",
+                        str(tbp)
+                    )
+
+
+                with c2:
+
+                    st.metric(
+                        "🤝 DRAW",
+                        str(draw)
+                    )
+
+
+                with c3:
+
+                    st.metric(
+                        "🏆 WON",
+                        str(won)
+                    )
+
+
+        # =================================================
+        # END
+        # =================================================
 
         st.divider()
