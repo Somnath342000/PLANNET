@@ -142,7 +142,114 @@ if any(x is None for x in required):
     st.stop()
 
 
+
+#-----শেষ
+
 # =====================================================
+# CARD NUMBER SEARCH
+# =====================================================
+
+st.divider()
+
+st.subheader("🎴 CARD NUMBER SEARCH")
+
+card_number = st.number_input(
+    "Enter Card Number (1 - 108)",
+    min_value=1,
+    max_value=108,
+    value=1,
+    step=1
+)
+
+search_card = st.button(
+    "🔍 SEARCH CARD",
+    use_container_width=True
+)
+
+
+# =====================================================
+# SEARCH CARD
+# =====================================================
+
+if search_card:
+
+    # Find card number
+    card_result = df[
+        pd.to_numeric(
+            df["CARD"],
+            errors="coerce"
+        ) == card_number
+    ].copy()
+
+
+    # =================================================
+    # CARD NOT FOUND
+    # =================================================
+
+    if card_result.empty:
+
+        st.error(
+            f"❌ Card {card_number} not found."
+        )
+
+
+    # =================================================
+    # CARD FOUND
+    # =================================================
+
+    else:
+
+        # First row of this card
+        first_row = card_result.iloc[0]
+
+
+        st.success(
+            f"🎴 Card {card_number} Found"
+        )
+
+
+        # =================================================
+        # CARD INFORMATION
+        # =================================================
+
+        c1, c2, c3 = st.columns(3)
+
+        with c1:
+            st.metric(
+                "🎴 CARD",
+                str(card_number)
+            )
+
+        with c2:
+            st.metric(
+                "🪐 PLANNET",
+                str(first_row[planet_col])
+            )
+
+        with c3:
+            st.metric(
+                "♈ SIGN",
+                str(first_row[sign_col])
+            )
+
+
+        c1, c2 = st.columns(2)
+
+        with c1:
+            st.metric(
+                "⚡ STATE",
+                str(first_row[state_col])
+            )
+
+        with c2:
+            st.metric(
+                "⭐ STATE POINT",
+                str(first_row[state_point_col])
+            )
+
+
+        st.divider()
+#=====================================================
 # FILTER SECTION
 # =====================================================
 
@@ -320,113 +427,6 @@ else:
             "STATE POINT",
             row[state_point_col]
         )
-
-#-----শেষ
-
-# =====================================================
-# CARD NUMBER SEARCH
-# =====================================================
-
-st.divider()
-
-st.subheader("🎴 CARD NUMBER SEARCH")
-
-card_number = st.number_input(
-    "Enter Card Number (1 - 108)",
-    min_value=1,
-    max_value=108,
-    value=1,
-    step=1
-)
-
-search_card = st.button(
-    "🔍 SEARCH CARD",
-    use_container_width=True
-)
-
-
-# =====================================================
-# SEARCH CARD
-# =====================================================
-
-if search_card:
-
-    # Find card number
-    card_result = df[
-        pd.to_numeric(
-            df["CARD"],
-            errors="coerce"
-        ) == card_number
-    ].copy()
-
-
-    # =================================================
-    # CARD NOT FOUND
-    # =================================================
-
-    if card_result.empty:
-
-        st.error(
-            f"❌ Card {card_number} not found."
-        )
-
-
-    # =================================================
-    # CARD FOUND
-    # =================================================
-
-    else:
-
-        # First row of this card
-        first_row = card_result.iloc[0]
-
-
-        st.success(
-            f"🎴 Card {card_number} Found"
-        )
-
-
-        # =================================================
-        # CARD INFORMATION
-        # =================================================
-
-        c1, c2, c3 = st.columns(3)
-
-        with c1:
-            st.metric(
-                "🎴 CARD",
-                str(card_number)
-            )
-
-        with c2:
-            st.metric(
-                "🪐 PLANNET",
-                str(first_row[planet_col])
-            )
-
-        with c3:
-            st.metric(
-                "♈ SIGN",
-                str(first_row[sign_col])
-            )
-
-
-        c1, c2 = st.columns(2)
-
-        with c1:
-            st.metric(
-                "⚡ STATE",
-                str(first_row[state_col])
-            )
-
-        with c2:
-            st.metric(
-                "⭐ STATE POINT",
-                str(first_row[state_point_col])
-            )
-
-
-        st.divider()
 
 
         # =================================================
