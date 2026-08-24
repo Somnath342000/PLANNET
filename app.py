@@ -274,7 +274,6 @@ if search_card:
         card_result = card_result.sort_values(
             "_HOUSE_SORT"
         )
-
         # =================================================
 # RANKING BY TBP
 # =================================================
@@ -411,75 +410,50 @@ for _, house_row in card_result.iterrows():
     rank = house_rank[str(house)]
 
 
-        # =================================================
-        # 12 HOUSE EXPANDERS
-        # =================================================
+    # =============================================
+    # EXPANDER
+    # =============================================
 
-        for _, house_row in card_result.iterrows():
+    with st.expander(
+        f"🏠 {ordinal(int(house))} House  |  "
+        f"TBP: {tbp}  |  "
+        f"🏆 Rank: {ordinal(rank)}",
+        expanded=False
+    ):
 
-            house = house_row[house_col]
+        # -----------------------------------------
+        # HOUSE POINT
+        # -----------------------------------------
 
-            house_point = house_row[house_point_col]
-
-            tbp = house_row[tbp_col]
-
-            draw = house_row[draw_col]
-
-            won = house_row[won_col]
-
-
-            # =============================================
-            # HOUSE EXPANDER
-            # =============================================
-
-            with st.expander(
-                f"🏠 HOUSE {house}",
-                expanded=False
-            ):
-
-                # -----------------------------------------
-                # HOUSE POINT
-                # -----------------------------------------
-
-                st.metric(
-                    "🏠 HOUSE POINT",
-                    str(house_point)
-                )
+        st.metric(
+            "🏠 HOUSE POINT",
+            str(house_point)
+        )
 
 
-                # -----------------------------------------
-                # SCORE
-                # -----------------------------------------
+        # -----------------------------------------
+        # SCORE
+        # -----------------------------------------
 
-                c1, c2, c3 = st.columns(3)
+        c1, c2, c3 = st.columns(3)
 
+        with c1:
 
-                with c1:
+            st.metric(
+                "⭐ TBP",
+                str(tbp)
+            )
 
-                    st.metric(
-                        "⭐ TBP",
-                        str(tbp)
-                    )
+        with c2:
 
+            st.metric(
+                "🤝 DRAW",
+                str(draw)
+            )
 
-                with c2:
+        with c3:
 
-                    st.metric(
-                        "🤝 DRAW",
-                        str(draw)
-                    )
-
-
-                with c3:
-
-                    st.metric(
-                        "🏆 WON",
-                        str(won)
-                    )
-
-
-        # =================================================
-        # END
-        # =================================================
-
-        st.divider()
+            st.metric(
+                "🏆 WON",
+                str(won)
+            )
