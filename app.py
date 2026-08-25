@@ -383,7 +383,7 @@ if search_card:
     for _, rank_row in ranking_data.iterrows():
 
         house_key = str(
-            rank_row[house_col]
+            int(rank_row[house_col])
         )
 
         house_rank[house_key] = int(
@@ -409,116 +409,65 @@ if search_card:
 
 
     # =================================================
-    # RANKING HEADER
+    # CREATE RANKING DATAFRAME
     # =================================================
 
-    col1, col2, col3 = st.columns(
-        [2, 2, 2]
-    )
+    ranking_display = pd.DataFrame({
 
+        "HOUSE": [
+            f"{ordinal(int(house))} House"
+            for house in card_result[house_col]
+        ],
 
-    with col1:
+        "TBP": [
+            tbp
+            for tbp in card_result[tbp_col]
+        ],
 
-        st.markdown(
-            "**🏠 HOUSE**"
-        )
-
-
-    with col2:
-
-        st.markdown(
-            "**⭐ TBP**"
-        )
-
-
-    with col3:
-
-        st.markdown(
-            "**🏆 RANK**"
-        )
-
-
-    st.divider()
-
-
-    # =================================================
-    # HOUSE RANK DISPLAY
-    # =================================================
-
-    for _, rank_row in card_result.iterrows():
-
-        house = int(
-            rank_row[house_col]
-        )
-
-
-        tbp = rank_row[tbp_col]
-
-
-        rank = house_rank[
-            str(house)
+        "RANK": [
+            ordinal(
+                house_rank[
+                    str(int(house))
+                ]
+            )
+            for house in card_result[house_col]
         ]
 
-
-        # ---------------------------------------------
-        # MEDAL
-        # ---------------------------------------------
-
-        if rank == 1:
-
-            rank_display = "🥇 1st"
-
-        elif rank == 2:
-
-            rank_display = "🥈 2nd"
-
-        elif rank == 3:
-
-            rank_display = "🥉 3rd"
-
-        else:
-
-            rank_display = ordinal(rank)
+    })
 
 
-        # ---------------------------------------------
-        # HOUSE NAME
-        # ---------------------------------------------
+    # =================================================
+    # ADD MEDAL TO TOP 3
+    # =================================================
 
-        house_display = (
-            ordinal(house)
-            + " House"
+    ranking_display["RANK"] = [
+
+        "🥇 1st"
+        if house_rank[str(int(house))] == 1
+
+        else "🥈 2nd"
+        if house_rank[str(int(house))] == 2
+
+        else "🥉 3rd"
+        if house_rank[str(int(house))] == 3
+
+        else ordinal(
+            house_rank[str(int(house))]
         )
 
-
-        # ---------------------------------------------
-        # DISPLAY
-        # ---------------------------------------------
-
-        col1, col2, col3 = st.columns(
-            [2, 2, 2]
-        )
+        for house in card_result[house_col]
+    ]
 
 
-        with col1:
+    # =================================================
+    # SHOW RANKING DATAFRAME
+    # =================================================
 
-            st.write(
-                f"**{house_display}**"
-            )
-
-
-        with col2:
-
-            st.write(
-                f"**{tbp}**"
-            )
-
-
-        with col3:
-
-            st.write(
-                f"**{rank_display}**"
-            )
+    st.dataframe(
+        ranking_display,
+        use_container_width=True,
+        hide_index=True
+    )
 
 
     # =================================================
@@ -569,7 +518,7 @@ if search_card:
 
 
         # ---------------------------------------------
-        # RANK DISPLAY
+        # RANK ICON
         # ---------------------------------------------
 
         if rank == 1:
@@ -594,7 +543,7 @@ if search_card:
         # =================================================
 
         with st.expander(
-            f"🏠 {ordinal(house)} House  | "
+            f"🏠 {ordinal(house)} House | "
             f"TBP: {tbp} | "
             f"{rank_icon} {ordinal(rank)}",
             expanded=False
