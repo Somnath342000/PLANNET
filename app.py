@@ -19,7 +19,14 @@ st.set_page_config(
 
 st.title("🪐 PLANET WAR")
 st.caption("Planet Database Search")
+# =====================================================
+# PLANET WAR IMAGE
+# =====================================================
 
+st.image(
+    "celestial-synergy-the-transformative-power-of-planetary-aspects-in-vedic-astrology-9910681.png",
+    use_container_width=True
+)
 
 # =====================================================
 # LOAD EXCEL DATABASE
