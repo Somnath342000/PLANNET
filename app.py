@@ -589,3 +589,213 @@ if search_card:
                     "🏆 WON",
                     str(won)
                 )
+# --------2nd ভাগ-------
+# =====================================================
+# PLANET WAR RESULT
+# =====================================================
+
+st.divider()
+
+st.subheader("⚔️ PLANET WAR RESULT")
+
+st.caption(
+    "Select two planets to see the Planet War result"
+)
+
+
+# =====================================================
+# LOAD RESULT DATABASE
+# =====================================================
+
+@st.cache_data
+def load_war_result():
+
+    result_df = pd.read_excel(
+        "PLANNET WAR RESULT.xlsx",
+        sheet_name="RESULT"
+    )
+
+    # Clean column names
+    result_df.columns = (
+        result_df.columns
+        .astype(str)
+        .str.replace("\n", " ", regex=False)
+        .str.strip()
+    )
+
+    # Clean values
+    for col in result_df.columns:
+
+        if result_df[col].dtype == "object":
+
+            result_df[col] = (
+                result_df[col]
+                .astype(str)
+                .str.strip()
+                .str.upper()
+            )
+
+    return result_df
+
+
+war_result = load_war_result()
+
+
+# =====================================================
+# PLANET LIST
+# =====================================================
+
+war_planets = sorted(
+    set(
+        war_result["PLANNET_1"].dropna().tolist()
+        +
+        war_result["PLANNET_2"].dropna().tolist()
+    )
+)
+
+
+# =====================================================
+# PLANET SELECTION
+# =====================================================
+
+c1, c2 = st.columns(2)
+
+
+with c1:
+
+    planet_1 = st.selectbox(
+        "🪐 PLANET 1",
+        war_planets,
+        key="war_planet_1"
+    )
+
+
+with c2:
+
+    planet_2 = st.selectbox(
+        "🪐 PLANET 2",
+        war_planets,
+        key="war_planet_2"
+    )
+
+
+# =====================================================
+# WAR RESULT BUTTON
+# =====================================================
+
+check_war = st.button(
+    "⚔️ CHECK WAR RESULT",
+    use_container_width=True
+)
+
+
+# =====================================================
+# FIND RESULT
+# =====================================================
+
+if check_war:
+
+    # Same planet
+    if planet_1 == planet_2:
+
+        st.warning(
+            "⚠️ Please select two different planets."
+        )
+
+    else:
+
+        # ---------------------------------------------
+        # Search both possible orders
+        # ---------------------------------------------
+
+        result = war_result[
+            (
+                (
+                    war_result["PLANNET_1"] == planet_1
+                )
+                &
+                (
+                    war_result["PLANNET_2"] == planet_2
+                )
+            )
+            |
+            (
+                (
+                    war_result["PLANNET_1"] == planet_2
+                )
+                &
+                (
+                    war_result["PLANNET_2"] == planet_1
+                )
+            )
+        ].copy()
+
+
+        # ---------------------------------------------
+        # Result Found
+        # ---------------------------------------------
+
+        if not result.empty:
+
+            row = result.iloc[0]
+
+            stored_p1 = row["PLANNET_1"]
+            stored_p2 = row["PLANNET_2"]
+
+            winner = row["WINNER"]
+            looser = row["LOOSER"]
+
+
+            st.divider()
+
+            st.subheader(
+                f"⚔️ {planet_1} vs {planet_2}"
+            )
+
+
+            # =========================================
+            # DRAW
+            # =========================================
+
+            if winner == "DRAW":
+
+                st.success(
+                    f"🤝 DRAW\n\n"
+                    f"{planet_1} vs {planet_2}"
+                )
+
+
+            # =========================================
+            # WINNER / LOOSER
+            # =========================================
+
+            else:
+
+                c1, c2 = st.columns(2)
+
+
+                with c1:
+
+                    st.metric(
+                        "🏆 WINNER",
+                        str(winner)
+                    )
+
+
+                with c2:
+
+                    st.metric(
+                        "❌ LOOSER",
+                        str(looser)
+                    )
+
+
+        # ---------------------------------------------
+        # Result Not Found
+        # ---------------------------------------------
+
+        else:
+
+            st.error(
+                "❌ No Planet War rule found."
+            )
